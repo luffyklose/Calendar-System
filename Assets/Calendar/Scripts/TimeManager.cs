@@ -26,6 +26,7 @@ namespace DPUtils.Systems.DateTime
 
         public static UnityAction<DateTime> OnDateTimeChanged;
         public static UnityAction<DateTime> OnNewDay;
+        public static UnityAction<DateTime> PrepareNewDay;
 
         private void Awake()
         {
@@ -35,6 +36,9 @@ namespace DPUtils.Systems.DateTime
         private void Start()
         {
             OnDateTimeChanged?.Invoke(DateTime);
+            OnNewDay?.Invoke(DateTime);
+            CalendarController calendarController = FindObjectOfType<CalendarController>();
+            calendarController.SetInitialTime(DateTime.Season, DateTime.Year);
         }
 
         private void Update()
@@ -54,7 +58,7 @@ namespace DPUtils.Systems.DateTime
         {
             DateTime.Hour = 0;
             DateTime.Minutes = 0;
-            Debug.Log($"Tmr {hour} {minutes}");
+            //Debug.Log($"Tmr {hour} {minutes}");
             OnDateTimeChanged?.Invoke(DateTime);
             DateTime.AdvanceDay();
         }
@@ -101,7 +105,11 @@ namespace DPUtils.Systems.DateTime
         public Weather Weather
         {
             get { return weather; }
-            set { weather = value; }
+            set
+            {
+                weather = value;
+                //Debug.Log($"Weather change to {value}");
+            }
         }
         #endregion
 
@@ -157,6 +165,7 @@ namespace DPUtils.Systems.DateTime
 
         public void AdvanceDay()
         {
+            TimeManager.PrepareNewDay?.Invoke(TimeManager.DateTime);
             day++;
 
             if (day > (Days)7)
@@ -174,7 +183,7 @@ namespace DPUtils.Systems.DateTime
             }
 
             totalNumDays++;
-
+            //Debug.Log($"New Weather {TimeManager.DateTime.Weather}");
             TimeManager.OnNewDay?.Invoke(TimeManager.DateTime);
         }
 
@@ -228,13 +237,12 @@ namespace DPUtils.Systems.DateTime
 
         public override string ToString()
         {
-            return $"Date: {DateToString()} Season: {season} Time: {TimeToString()} " +
-                $"\nTotal Days: {totalNumDays} | Total Weeks: {totalNumWeeks}";
+            return $"Date: {DateToString()} Season: {season} Time: {TimeToString()} ";
         }
         public string DateToString()
         {
             var Day = day;
-                return $"{Day} {Date} {Year.ToString("D2")}";
+                return $"{Day} {Date}";
         }
 
         public string TimeToString()

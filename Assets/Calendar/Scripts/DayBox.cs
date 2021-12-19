@@ -20,12 +20,12 @@ namespace DPUtils.Systems.DateTime
         public void HideHighlight()
         {
             highlight.gameObject.SetActive(false);
-            highlight.color = Color.clear;
+            //highlight.color = Color.clear;
         }
 
         public void ShowHighlight()
         {
-            highlight.color = Color.white;
+            //highlight.color = Color.white;
             highlight.gameObject.SetActive(true);
         }
 

@@ -17,9 +17,7 @@ public class WeatherManager : MonoBehaviour
         PSList.Add(rainParticles);
         PSList.Add(snowParticles);
 
-        rainParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);
-        snowParticles.Stop(false, ParticleSystemStopBehavior.StopEmitting);
-        
+        StopAllPS();
     }
 
     private void OnEnable()
@@ -34,44 +32,41 @@ public class WeatherManager : MonoBehaviour
 
     private void SetWeather(DateTime dateTime)
     {
-        Debug.Log("Set weather");
-       if (dateTime.Hour == 0 && dateTime.Minutes == 0)
+        //Debug.Log("Set weather" + dateTime.Weather);
+        if (dateTime.Weather != Weather.None)
         {
-            if (dateTime.Weather != Weather.None)
+            currentWeather = dateTime.Weather;
+        }
+        else
+        {
+            //Debug.Log("Random weather");
+            currentWeather = (Weather)Random.Range(1, (int)Weather.MAX_WEATHER_AMOUNT + 1);
+        }
+        
+        StopAllPS();
+        switch (currentWeather)
+        {
+            case Weather.Raining:
             {
-                currentWeather = dateTime.Weather;
+                rainParticles.Play();
+                break;
             }
-            else
+            case Weather.Snowing:
             {
-                Debug.Log("Random weather");
-                currentWeather = (Weather)Random.Range(1, (int)Weather.MAX_WEATHER_AMOUNT + 1);
+                snowParticles.Play();
+                break;
             }
-
-            switch (currentWeather)
+            case Weather.Sunny:
             {
-                case Weather.Raining:
-                {
-                    rainParticles.Play();
-                    break;
-                }
-                case Weather.Sonwing:
-                {
-                    snowParticles.Play();
-                    break;
-                }
-                case Weather.Sunny:
-                {
-                    StopAllPS();
-                    break;
-                }
-                default: break;
+                break;
             }
+            default: break;
         }
     }
 
     private void StopAllPS()
     {
-        foreach (var ps in PSList)
+        foreach (ParticleSystem ps in PSList)
         {
             ps.Stop(false, ParticleSystemStopBehavior.StopEmitting);
         }

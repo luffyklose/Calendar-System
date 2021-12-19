@@ -35,18 +35,19 @@ public class ClockManager : MonoBehaviour
     private void OnEnable()
     {
         TimeManager.OnDateTimeChanged += UpdateDateTime;
+        TimeManager.OnNewDay += UpdateWeather;
     }
 
     private void OnDisable()
     {
         TimeManager.OnDateTimeChanged -= UpdateDateTime;
+        TimeManager.OnNewDay -= UpdateWeather;
     }
     
     private void UpdateDateTime(DateTime dateTime)
     {
         dateText.text = dateTime.DateToString();
         timeText.text = dateTime.TimeToString();
-        weatherSprite.sprite = weatherSprites[(int)WeatherManager.currentWeather];
 
         float t = (float)dateTime.Hour / 24f;
 
@@ -57,5 +58,11 @@ public class ClockManager : MonoBehaviour
         if(WeatherManager.currentWeather == Weather.Sunny)
             sunlight.color = Color.Lerp(dayColor, nightColor, dayNightT);
         else sunlight.color = Color.Lerp(rainyDayColor, nightColor, dayNightT);
+    }
+
+    private void UpdateWeather(DateTime dateTime)
+    {
+        //Debug.Log($"{WeatherManager.currentWeather} {TimeManager.DateTime.Weather}");
+        weatherSprite.sprite = weatherSprites[(int)WeatherManager.currentWeather];
     }
 }

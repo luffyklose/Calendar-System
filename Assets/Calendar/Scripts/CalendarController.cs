@@ -21,11 +21,13 @@ namespace DPUtils.Systems.DateTime
         private void Awake()
         {
             TimeManager.OnNewDay += DateTimeChanged;
+            TimeManager.PrepareNewDay += SetWeather;
         }
 
         private void OnDisable()
         {
             TimeManager.OnNewDay -= DateTimeChanged;
+            TimeManager.PrepareNewDay -= SetWeather;
         }
 
         private void Start()
@@ -34,8 +36,7 @@ namespace DPUtils.Systems.DateTime
             DescriptionText.text = "";
             previousDateTime = TimeManager.DateTime;
             SortDates();
-            FillPanels((Season)0);
-            SetKeyDateWeather();
+            FillPanels((Season)currentSeasonView);
         }
 
         void DateTimeChanged(DateTime _date)
@@ -66,6 +67,42 @@ namespace DPUtils.Systems.DateTime
                 calendarPanels[0].ShowHighlight();
                 previousDateTime = _date;
             }
+        }
+
+        void SetWeather(DateTime _date)
+        {
+            //Debug.Log("Start setting weather");
+            foreach (KeyDates date in this.keyDates)
+            {
+                bool isNextDayKey = (date.KeyDate.Date == _date.Date + 1 && date.KeyDate.Season == _date.Season &&
+                                     (date.KeyDate.Year == _date.Year || date.Yearly)) ||
+                                    (date.KeyDate.Date == 1 && _date.Date == 28 &&
+                                     date.KeyDate.Season == _date.Season + 1 &&
+                                     (date.KeyDate.Year == _date.Year || date.Yearly)) ||
+                                    (date.KeyDate.Date == 1 && _date.Date == 28 && date.KeyDate.Season == (Season)0 &&
+                                     _date.Season == (Season)3 &&
+                                     (date.KeyDate.Year == _date.Year + 1 || date.Yearly));
+                /*
+                Debug.Log(
+                    $"Date: {date.KeyDate.Date} {_date.Date} Season: {date.KeyDate.Season} {_date.Season} Year: {date.KeyDate.Year} {_date.Year}");
+                Debug.Log((date.KeyDate.Date == _date.Date + 1 && date.KeyDate.Season == _date.Season &&
+                           (date.KeyDate.Year == _date.Year || date.Yearly)) + " " + (date.KeyDate.Date == 1 &&
+                              _date.Date == 28 &&
+                              date.KeyDate.Season == _date.Season + 1 &&
+                              (date.KeyDate.Year == _date.Year || date.Yearly)) + " " +
+                          (date.KeyDate.Date == 1 && _date.Date == 28 && date.KeyDate.Season == (Season)0 &&
+                           _date.Season == (Season)3 &&
+                           (date.KeyDate.Year == _date.Year + 1 || date.Yearly)));
+                Debug.Log($"{date.KeyDate.Date} {date.KeyDate.Season} is KeyDate? {isNextDayKey}!");
+                */
+                if (isNextDayKey && date.KeyDate.Weather!=Weather.None)
+                {
+                    TimeManager.DateTime.Weather = date.weather;
+                    //Debug.Log($"Set {TimeManager.DateTime.Weather} succeed on {date.KeyDate.Date} {date.KeyDate.Season} {date.KeyDate.Year}");
+                    return;
+                }
+            }
+            TimeManager.DateTime.Weather = Weather.None;
         }
 
         private void SortDates()
@@ -105,18 +142,12 @@ namespace DPUtils.Systems.DateTime
             }
         }
 
-        private void SetKeyDateWeather()
+        public void SetInitialTime(Season season,int year)
         {
-            foreach (var date in keyDates)
-            {
-                if (date.weather != null && date.KeyDate.Weather == Weather.None)
-                {
-                    Debug.Log("Need set weather of" + date.KeyDate.Season + " " + date.KeyDate.Date);
-                    date.KeyDate.Weather = date.weather;
-                }
-            }
+            currentSeasonView = (int)season;
+            currentYear = year;
         }
-
+        
         public void OnNextSeason()
         {
             currentSeasonView += 1;

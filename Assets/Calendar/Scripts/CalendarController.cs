@@ -14,7 +14,7 @@ namespace DPUtils.Systems.DateTime
         public TextMeshProUGUI yearText;
         public static TextMeshProUGUI DescriptionText;
 
-        private int currentSeasonView = 0;
+        private int currentSeasonView = 1;
         private int currentYear = 1;
         private DateTime previousDateTime;
 

@@ -827,6 +827,8 @@ MonoBehaviour:
   - {fileID: 11400000, guid: b8f9a0050b661fe41ad14d9e296c0ec0, type: 2}
   - {fileID: 11400000, guid: 3918990a0ae3b2b48ba52738e2bfeeda, type: 2}
   - {fileID: 11400000, guid: 7a77b9c7052d54149a37159bd808782f, type: 2}
+  - {fileID: 11400000, guid: f3d34777ce49af54e8d3dae32ff94390, type: 2}
+  - {fileID: 11400000, guid: 94b6d13cea9304f49b2e19ae04912f4a, type: 2}
   seasonText: {fileID: 6476965637996223007}
   setDescriptionText: {fileID: 5158584011144211822}
   yearText: {fileID: 7347973865860570008}
